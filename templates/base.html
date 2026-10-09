@@ -14,8 +14,13 @@
         <a href="{{ url_for('appointments.index') }}">Appointments</a>
         <a href="{{ url_for('patient_flow.index') }}">Patient Flow</a>
         <a href="{{ url_for('availability.index') }}">Availability</a>
-        <button class="link-button" data-not-implemented>Billing</button>
-        <button class="link-button" data-not-implemented>Reports</button>
+        <a href="{{ url_for('reports.index') }}">Reports</a>
+        <a href="{{ url_for('notifications.index') }}">
+          Notifications
+          {% if unread_notifications > 0 %}
+            <span class="notif-badge">{{ unread_notifications }}</span>
+          {% endif %}
+        </a>
       </nav>
       <div class="session">
         {% if session.get("user_id") %}

@@ -10,7 +10,7 @@ patient_flow_bp = Blueprint("patient_flow", __name__, url_prefix="/patient-flow"
 @patient_flow_bp.route("/")
 @require_role("secretary", "doctor")
 def index():
-    flow_items = ClinicRepository().list_patient_flow()
+    flow_items = ClinicRepository().list_patient_flow(today_only=True)
     return render_template("patient_flow/index.html", flow_items=flow_items)
 
 
@@ -21,5 +21,5 @@ def update_status(flow_id):
     if errors:
         flash(errors[0], "error")
     else:
-        flash("Patient flow status updated.", "success")
+        flash("Patient status updated.", "success")
     return redirect(url_for("patient_flow.index"))

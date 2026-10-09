@@ -8,36 +8,72 @@
     <p class="eyebrow">Waiting room</p>
     <h1>Move patients through the clinical visit</h1>
   </div>
+  <a class="button" href="{{ url_for('appointments.index') }}">Appointment List</a>
 </section>
 
 <section class="flow-grid">
   {% for item in flow_items %}
-    <article class="flow-card">
+    <article class="flow-card {% if item.is_delayed %}delayed{% endif %}">
       <div>
-        <span class="queue">#{{ item.queue_number }}</span>
+        <div class="queue-row">
+          <span class="queue">#{{ item.queue_number }}</span>
+          {% if item.priority == 2 %}
+            <span class="badge emergency">Emergency</span>
+          {% elif item.priority == 1 %}
+            <span class="badge urgent">Urgent</span>
+          {% endif %}
+          {% if item.is_delayed %}
+            <span class="badge delay">Delayed</span>
+          {% endif %}
+        </div>
         <h2>{{ item.patient.full_name }}</h2>
-        <p>{{ item.appointment.doctor.user.full_name if item.appointment else "Walk-in patient" }}</p>
+        <p>{{ item.appointment.doctor.user.full_name if item.appointment else "Walk-in" }}</p>
+        {% if item.appointment %}
+          <p class="appt-time">Slot: {{ item.appointment.appointment_time.strftime("%H:%M") }}</p>
+        {% endif %}
+        <p class="appt-time">Checked in: {{ item.checked_in_at.strftime("%H:%M") }}</p>
       </div>
-      <span class="status {{ item.current_status }}">{{ item.current_status|replace("_", " ")|title }}</span>
+
+      <span class="status {{ item.current_status }}">
+        {{ item.current_status|replace("_", " ")|title }}
+      </span>
+
       <div class="button-row">
         {% if item.current_status == "waiting" %}
           <form method="post" action="{{ url_for('patient_flow.update_status', flow_id=item.id) }}">
-            <input type="hidden" name="next_status" value="in_exam">
-            <button type="submit">Start Exam</button>
+            <input type="hidden" name="next_status" value="in_consultation">
+            <button type="submit">Start Consultation</button>
           </form>
-        {% endif %}
-        {% if item.current_status == "in_exam" %}
           <form method="post" action="{{ url_for('patient_flow.update_status', flow_id=item.id) }}">
-            <input type="hidden" name="next_status" value="completed">
-            <button type="submit">Complete</button>
+            <input type="hidden" name="next_status" value="cancelled">
+            <button type="submit" class="btn-danger">Cancel Visit</button>
+          </form>
+
+        {% elif item.current_status == "in_consultation" %}
+          <form method="post" action="{{ url_for('patient_flow.update_status', flow_id=item.id) }}">
+            <input type="hidden" name="next_status" value="assessment">
+            <button type="submit">Send to Assessment</button>
+          </form>
+          <form method="post" action="{{ url_for('patient_flow.update_status', flow_id=item.id) }}">
+            <input type="hidden" name="next_status" value="done">
+            <button type="submit">Complete Visit</button>
+          </form>
+
+        {% elif item.current_status == "assessment" %}
+          <form method="post" action="{{ url_for('patient_flow.update_status', flow_id=item.id) }}">
+            <input type="hidden" name="next_status" value="done">
+            <button type="submit">Complete Visit</button>
+          </form>
+          <form method="post" action="{{ url_for('patient_flow.update_status', flow_id=item.id) }}">
+            <input type="hidden" name="next_status" value="cancelled">
+            <button type="submit" class="btn-danger">Cancel</button>
           </form>
         {% endif %}
-        <button type="button" data-not-implemented>Clinical Notes</button>
       </div>
     </article>
   {% else %}
     <section class="empty-state">
-      <h2>No checked-in patients</h2>
+      <h2>No active patients today</h2>
       <p>Use the appointment list to check in a scheduled patient.</p>
     </section>
   {% endfor %}

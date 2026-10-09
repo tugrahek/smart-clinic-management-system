@@ -266,10 +266,3 @@ This repository is structured to support both:
 - course presentation requirements
 - future feature expansion with minimal restructuring
 
-If you continue this project, the next natural step is to add:
-
-- role-specific profile management
-- prescription workflows
-- stronger authentication policies
-- audit logging
-- admin tools for hospital staff and department management

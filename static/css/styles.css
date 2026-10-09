@@ -284,9 +284,161 @@ th {
 
 .status.waiting,
 .status.checked_in,
-.status.in_exam {
+.status.in_exam,
+.status.in_consultation {
   background: #fff0c2;
   color: var(--warning);
+}
+
+.status.assessment {
+  background: var(--info-bg);
+  color: #15506c;
+}
+
+.status.done {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+/* Priority / delay badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-left: 6px;
+}
+
+.badge.emergency {
+  background: var(--error-bg);
+  color: var(--error-text);
+}
+
+.badge.urgent {
+  background: #fff0c2;
+  color: var(--warning);
+}
+
+.badge.delay {
+  background: var(--error-bg);
+  color: var(--error-text);
+}
+
+/* Danger button */
+.btn-danger {
+  background: var(--accent);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 18px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.btn-danger:hover {
+  background: #9b1c2b;
+}
+
+/* Queue row */
+.queue-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+/* Stats dashboard grid */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+
+.stat-value {
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1.1;
+  margin: 6px 0 4px;
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Delayed patient card highlight */
+.flow-card.delayed {
+  border-color: var(--accent);
+}
+
+/* Current patient highlight in doctor dashboard */
+.flow-card.current-patient,
+.panel.current-patient {
+  border-color: var(--primary);
+  background: linear-gradient(135deg, #f0faf7, white);
+}
+
+/* Appointment time detail */
+.appt-time {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 2px 0 0;
+}
+
+/* Notification badge in nav */
+.notif-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: white;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 0 5px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+/* Notification list item colours */
+.notif-item {
+  border-left: 4px solid var(--line);
+}
+
+.notif-item.notif-alert {
+  border-left-color: var(--accent);
+}
+
+.notif-item.notif-warning {
+  border-left-color: var(--warning);
+}
+
+.notif-item.notif-info {
+  border-left-color: var(--primary);
 }
 
 .slot-board {

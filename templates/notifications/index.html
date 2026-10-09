@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications | Smart Clinic{% endblock %}
+
+{% block content %}
+<section class="section-heading">
+  <div>
+    <p class="eyebrow">Inbox</p>
+    <h1>Notifications</h1>
+  </div>
+</section>
+
+<section class="stack">
+  {% for notif in notifications %}
+    <article class="list-item notif-item notif-{{ notif.category }}">
+      <div style="display:flex;justify-content:space-between;align-items:start;gap:16px;">
+        <strong>{{ notif.title }}</strong>
+        <span style="color:var(--muted);font-size:12px;white-space:nowrap;">
+          {{ notif.created_at.strftime("%d %b %Y %H:%M") }}
+        </span>
+      </div>
+      <p style="margin:4px 0 0;color:var(--muted);">{{ notif.body }}</p>
+    </article>
+  {% else %}
+    <div class="empty-state">
+      <h2>No notifications</h2>
+      <p>You are all caught up. Notifications appear here when appointments are created, changed, or when alerts are raised.</p>
+    </div>
+  {% endfor %}
+</section>
+{% endblock %}

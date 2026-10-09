@@ -2,6 +2,7 @@ from clinic.models.appointment import Appointment
 from clinic.models.department import Department
 from clinic.models.doctor_profile import DoctorProfile
 from clinic.models.medical_record import MedicalRecord
+from clinic.models.notification import Notification
 from clinic.models.patient import Patient
 from clinic.models.patient_flow import PatientFlow
 from clinic.models.prescription import Prescription
@@ -14,6 +15,7 @@ __all__ = [
     "DoctorAvailability",
     "DoctorProfile",
     "MedicalRecord",
+    "Notification",
     "Patient",
     "PatientFlow",
     "Prescription",

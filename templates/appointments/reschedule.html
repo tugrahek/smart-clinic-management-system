@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Reschedule Appointment | Smart Clinic{% endblock %}
+
+{% block content %}
+<section class="section-heading">
+  <div>
+    <p class="eyebrow">Reschedule</p>
+    <h1>Change appointment date &amp; time</h1>
+  </div>
+  <a class="button" href="{{ url_for('appointments.index') }}" style="background:var(--muted);">
+    Back
+  </a>
+</section>
+
+<section class="two-column">
+  <!-- Current appointment info -->
+  <section class="panel">
+    <h2>Current Appointment</h2>
+    <p><strong>Patient:</strong> {{ appointment.patient.full_name }}</p>
+    <p><strong>Doctor:</strong> {{ appointment.doctor.user.full_name }}</p>
+    <p><strong>Date:</strong> {{ appointment.appointment_date }}</p>
+    <p><strong>Time:</strong> {{ appointment.appointment_time.strftime("%H:%M") }}</p>
+    <p><strong>Reason:</strong> {{ appointment.reason }}</p>
+
+    <hr style="border:none;border-top:1px solid var(--line);margin:4px 0;">
+
+    <!-- Date picker to refresh available slots -->
+    <form method="get">
+      <label for="appointment_date_lookup">Check slots on another date</label>
+      <input id="appointment_date_lookup" type="date" name="appointment_date"
+             value="{{ selected_date }}" required>
+      <button type="submit">Show Slots</button>
+    </form>
+  </section>
+
+  <!-- New date/time selection -->
+  <form class="panel" method="post">
+    <h2>New Date &amp; Time</h2>
+    <input type="hidden" name="appointment_date" value="{{ selected_date }}">
+
+    <label for="appointment_time">Available time on {{ selected_date }}</label>
+    <select id="appointment_time" name="appointment_time" required>
+      <option value="">Choose available time</option>
+      {% for slot in slots %}
+        <option value="{{ slot.time.strftime('%H:%M') }}"
+                {% if not slot.is_available %}disabled{% endif %}>
+          {{ slot.time.strftime("%H:%M") }} — {{ "Available" if slot.is_available else "Booked" }}
+        </option>
+      {% else %}
+        <option disabled>No slots — doctor has no availability on this date</option>
+      {% endfor %}
+    </select>
+
+    <button type="submit">Confirm Reschedule</button>
+  </form>
+</section>
+
+<section class="slot-board">
+  <h2>Slot overview for {{ selected_date }}</h2>
+  <div class="slot-grid">
+    {% for slot in slots %}
+      <span class="slot {{ 'available' if slot.is_available else 'booked' }}">
+        {{ slot.time.strftime("%H:%M") }}
+      </span>
+    {% else %}
+      <p>No availability on this date.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

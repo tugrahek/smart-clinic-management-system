@@ -23,7 +23,7 @@
         <th>Time</th>
         <th>Reason</th>
         <th>Status</th>
-        <th>Action</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -34,15 +34,41 @@
           <td>{{ appointment.appointment_date }}</td>
           <td>{{ appointment.appointment_time.strftime("%H:%M") }}</td>
           <td>{{ appointment.reason }}</td>
-          <td><span class="status {{ appointment.status }}">{{ appointment.status|replace("_", " ")|title }}</span></td>
           <td>
-            {% if user.role == "secretary" and appointment.status == "scheduled" %}
-              <form method="post" action="{{ url_for('appointments.check_in', appointment_id=appointment.id) }}">
-                <button type="submit">Check In</button>
-              </form>
-            {% else %}
-              <button type="button" data-not-implemented>Details</button>
-            {% endif %}
+            <span class="status {{ appointment.status }}">
+              {{ appointment.status|replace("_", " ")|title }}
+            </span>
+          </td>
+          <td>
+            <div class="button-row">
+              {% if user.role == "secretary" and appointment.status == "scheduled" %}
+                <form method="post" action="{{ url_for('appointments.check_in', appointment_id=appointment.id) }}"
+                      style="display:flex;gap:6px;align-items:center;">
+                  <select name="priority" style="min-height:36px;width:auto;">
+                    <option value="0">Normal</option>
+                    <option value="1">Urgent</option>
+                    <option value="2">Emergency</option>
+                  </select>
+                  <button type="submit">Check In</button>
+                </form>
+              {% endif %}
+
+              {% if appointment.status in ["scheduled", "checked_in"] %}
+                {% if user.role == "secretary" or (user.role == "patient" and appointment.patient.email == user.email) %}
+                  <a class="button" href="{{ url_for('appointments.reschedule', appointment_id=appointment.id) }}">
+                    Reschedule
+                  </a>
+                  <form method="post" action="{{ url_for('appointments.cancel', appointment_id=appointment.id) }}"
+                        onsubmit="return confirm('Cancel this appointment?')">
+                    <button type="submit" class="btn-danger">Cancel</button>
+                  </form>
+                {% endif %}
+              {% endif %}
+
+              {% if appointment.status not in ["scheduled", "checked_in"] and user.role not in ["secretary"] %}
+                <span style="color:var(--muted);font-size:13px;">{{ appointment.status|replace("_"," ")|title }}</span>
+              {% endif %}
+            </div>
           </td>
         </tr>
       {% else %}

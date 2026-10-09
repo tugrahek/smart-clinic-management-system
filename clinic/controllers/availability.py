@@ -25,3 +25,16 @@ def index():
 
     items = ClinicRepository().list_doctor_availability(doctor_id=doctor.id)
     return render_template("availability/index.html", availability_items=items)
+
+
+@availability_bp.route("/<int:availability_id>/delete", methods=["POST"])
+@require_role("doctor")
+def delete(availability_id):
+    user = current_user()
+    doctor = user.doctor_profile
+    _, errors = AvailabilityService().delete_availability(availability_id, doctor.id)
+    if errors:
+        flash(errors[0], "error")
+    else:
+        flash("Availability entry deleted.", "success")
+    return redirect(url_for("availability.index"))

@@ -54,8 +54,8 @@
           </p>
 
           <div class="landing-cta-row">
-            <button class="button" type="button" data-not-implemented>Open Patient Portal</button>
-            <button class="button secondary-button" type="button" data-not-implemented>Book Appointment</button>
+            <a class="button" href="{{ url_for('auth.login') }}">Open Patient Portal</a>
+            <a class="button secondary-button" href="{{ url_for('auth.register') }}">Book Appointment</a>
           </div>
         </div>
 

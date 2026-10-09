@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Reports | Smart Clinic{% endblock %}
+
+{% block content %}
+<section class="section-heading">
+  <div>
+    <p class="eyebrow">Administrative reports</p>
+    <h1>Clinic performance &amp; workload</h1>
+  </div>
+</section>
+
+<!-- Date range filter -->
+<form class="panel" method="get" style="margin-bottom:28px;grid-template-columns:auto auto auto;align-items:end;">
+  <div>
+    <label for="start_date">From</label>
+    <input id="start_date" type="date" name="start_date" value="{{ start_date }}">
+  </div>
+  <div>
+    <label for="end_date">To</label>
+    <input id="end_date" type="date" name="end_date" value="{{ end_date }}">
+  </div>
+  <button type="submit">Generate Report</button>
+</form>
+
+<!-- Summary stats -->
+<div class="stat-grid" style="margin-bottom:32px;">
+  <div class="stat-card">
+    <div class="stat-label">Avg Wait Time</div>
+    <div class="stat-value">
+      {% if avg_wait is not none %}{{ avg_wait }} min{% else %}—{% endif %}
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">No-Show Rate</div>
+    <div class="stat-value">
+      {% if no_show_rate is not none %}{{ no_show_rate }}%{% else %}—{% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Appointment volume by doctor -->
+<section class="section-heading" style="padding-top:0;">
+  <div>
+    <p class="eyebrow">By doctor</p>
+    <h1 style="font-size:28px;">Appointment volume</h1>
+  </div>
+</section>
+
+<section class="table-wrap" style="margin-bottom:32px;">
+  <table>
+    <thead>
+      <tr>
+        <th>Doctor</th>
+        <th>Department</th>
+        <th>Total</th>
+        <th>Completed</th>
+        <th>Cancelled</th>
+        <th>Other</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in volume_by_doctor %}
+        <tr>
+          <td>{{ row.doctor.user.full_name }}</td>
+          <td>{{ row.doctor.department.name }}</td>
+          <td><strong>{{ row.total }}</strong></td>
+          <td>{{ row.done }}</td>
+          <td>{{ row.cancelled }}</td>
+          <td>{{ row.other }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6">No appointments in this period.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<!-- Workload by department -->
+<section class="section-heading" style="padding-top:0;">
+  <div>
+    <p class="eyebrow">By department</p>
+    <h1 style="font-size:28px;">Clinic workload</h1>
+  </div>
+</section>
+
+<section class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Department</th>
+        <th>Floor</th>
+        <th>Total Appointments</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in workload %}
+        <tr>
+          <td>{{ row.department.name }}</td>
+          <td>{{ row.department.floor or "—" }}</td>
+          <td><strong>{{ row.total }}</strong></td>
+        </tr>
+      {% else %}
+        <tr><td colspan="3">No data in this period.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

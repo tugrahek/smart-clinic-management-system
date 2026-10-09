@@ -5,9 +5,10 @@ from clinic.repositories import ClinicRepository
 
 class PatientFlowService:
     ALLOWED_TRANSITIONS = {
-        "waiting": {"in_exam", "cancelled"},
-        "in_exam": {"completed"},
-        "completed": set(),
+        "waiting": {"in_consultation", "cancelled"},
+        "in_consultation": {"assessment", "done", "cancelled"},
+        "assessment": {"done", "cancelled"},
+        "done": set(),
         "cancelled": set(),
     }
 
@@ -21,17 +22,44 @@ class PatientFlowService:
 
         allowed = self.ALLOWED_TRANSITIONS.get(flow_record.current_status, set())
         if next_status not in allowed:
-            return None, ["This patient flow transition is not allowed."]
+            return None, [
+                f"Cannot transition from '{flow_record.current_status}' to '{next_status}'."
+            ]
 
+        was_delayed = flow_record.is_delayed
         flow_record.current_status = next_status
-        if next_status == "in_exam":
+
+        if next_status == "in_consultation":
             flow_record.started_at = datetime.utcnow()
             if flow_record.appointment:
-                flow_record.appointment.status = "in_exam"
-        if next_status == "completed":
+                flow_record.appointment.status = "in_consultation"
+            if was_delayed:
+                self._alert_delay(flow_record)
+        elif next_status == "assessment":
+            if flow_record.appointment:
+                flow_record.appointment.status = "assessment"
+        elif next_status == "done":
             flow_record.completed_at = datetime.utcnow()
             if flow_record.appointment:
-                flow_record.appointment.status = "completed"
+                flow_record.appointment.status = "done"
+        elif next_status == "cancelled":
+            if flow_record.appointment:
+                flow_record.appointment.status = "cancelled"
 
         self.repository.commit()
         return flow_record, []
+
+    def _alert_delay(self, flow_record):
+        """Create a staff notification when a delayed patient starts consultation."""
+        try:
+            from clinic.services.notification_service import NotificationService
+            NotificationService(self.repository).notify_staff(
+                title="Patient Delay Alert",
+                body=(
+                    f"{flow_record.patient.full_name} started consultation with a significant delay. "
+                    f"Queue #{flow_record.queue_number}."
+                ),
+                category="alert",
+            )
+        except Exception:
+            pass
